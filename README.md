@@ -119,7 +119,7 @@ Pipeline generates a .csv file with results from all stages in descending order.
 |FLARKGIDT|A*02:01|QEVTQIPAALSVPEGENLVF|1|0.8462521|0.8241231|
 
 ### TUTORIAL
-**1. Identyfication of neoantigens**
+**1. Identification of neoantigens**
 - Launch Jupyter Notebook
 - Navigate to extracted folder and open `example.ipynb` file in Jupyter Notebook
 - Enter the path to the csv file that contains peptides, MHC molecules and TCR sequences

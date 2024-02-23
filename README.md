@@ -1,51 +1,28 @@
-# AI Guided Selection of Neoantigens
+# Cancer immunotherapies ignited by a thourough machine learning-based selection of neoantigens
 ## Project Description
+This is a comprehensive pipeline aimed at identify neoantigens in cancer patients. The adaptive immune system depends on the presentation of protein fragments by MHC molecules. Machine learning models of this interaction are used in studies of infectious diseases, autoimmune diseases, vaccine development, and cancer immunotherapy. The project consists of three stages: 
 
-This repository houses an advanced bioinformatics pipeline designed for the identification and prediction of immunogenic neoantigens from whole exome sequencing (WES) or whole genome sequencing (WGS) data of matched tumor-normal samples. 
-The pipeline integrates cutting-edge computational methods and bioinformatics tools to process raw sequencing data, identify high-confidence genetic variants and predict the immunogenic potential of neoantigens through a multi-stage analysis.
+**1. Classification of known antigens from potential neoantigens candidates.**
 
-### Predictive Analysis Stages ###
-
-**1. Stage 1: Antigen Classification**
-
-A Random Forest-based classifier, trained on data from immune epitope databases, classifies mutant peptides into antigens and neoantigens. 
-The classifier's output is probabilistic, facilitating its integration into generative models for neoantigen prediction.
+A decision tree-based classifier, trained to identify new, as yet unknown antigens. All peptides marked as potential neoantigens are subject to further analysis.
 
 
-**2. Stage 2: MHC-Peptide Interaction Prediction**
+**2. Prediction of the peptides presented on major histocompatibility complex (MHC) class I.**
 
-The MHCflurry 2.0 package is employed to predict the binding affinity and cleavage efficiency of peptides with MHC molecules. 
-This stage assesses the binding affinty of a peptide being presented by MHC molecules to T-cells.
+Antigen binding predictor trained on mass spectrometry-identified MHC ligands. A deep neural network from the MHCflurry library was implemented, which calculates the binding affinity between a given peptide and the MHC complex.
 
-**3. Stage 3: TCR-Neoantigen Interaction Strength**
+**3. Calculating the probability of recognizing a neoantigen by TCR receptors.**
 
-Using the TCRGP package, this stage predicts the interaction strength between neoantigens and TCRs, providing insight into the potential efficacy of immune responses against the identified neoantigens.
+TCRGP, a GP based probabilistic classifier which can be trained to predict TCR specificity to any epitope given sufficient training data for the specified epitope. GPs implement a Bayesian nonparametric kernel method for learning from data.
 
-**4. Defining Thresholds**
-
-Optimal thresholds for distinguishing between binding and non-binding events are determined through a comprehensive analysis, including cross-validation and examining distributions of predicted scores. 
-This enables precise identification of neoantigens with high immunogenic potential.
-
-### Neoantigen Generation Techniques ###
-
-Two approaches are employed for generating neoantigen candidates:
-
-**1. Reinforcement Learning-Based Generator**
-
-Leverages a Q-network to predict cumulative rewards from the discriminator, guiding the generation of neoantigen candidates. 
-This model employs a reinforcement learning framework to optimize peptide sequences for immunogenicity.
-
+**4. Generative approach: Reinfordcement Learning.**
+We have implemented an alternative generative approach using a Reinforcement Learning (RL) technique. This method, while similar to our Monte Carlo approach, introduces a distinctive structure comprising a generator and a discriminator, guided by a Q-network.
 ***Components***
-
 1. Discriminator
    Functions similarly to the one in the Monte Carlo approach, providing a cumulative reward to each generated peptide sequence.
 2. Q-Network
-   Trained to predict cumulative rewards from the discriminator.
-   It consists of three fully connected layers with ReLU activation functions.
-   The input is an aggregated one-hot encoded representation of peptide, MHC, and TCR sequences, while the output predicts the discriminator's cumulative reward.
-   
+   Trained to predict cumulative rewards from the discriminator. It consists of three fully connected layers with ReLU activation functions. The input is an aggregated one-hot encoded representation of peptide, MHC, and TCR sequences, while the output predicts the discriminator's cumulative reward.
 ***Process***
-
 1. Step Limit
    Each episode is limited to 100 steps, promoting exploration of peptide sequences.
 2. Reward Threshold
@@ -57,21 +34,11 @@ This model employs a reinforcement learning framework to optimize peptide sequen
 5. Ranking
    After the completion of episodes, neoantigens are ranked based on their cumulative rewards, yielding the top-100 list of selected candidates.
 
-**2. Monte Carlo-Based Generator**
-
-Iteratively introduces mutations into peptide sequences, assessing their immunogenic potential through a cumulative reward mechanism provided by the discriminator, which consists of the three predictive stages.
+**5. Monte Carlo Generative approach.**
+In addition to the Reinforcement Learning technique, we have developed a generative approach based on Monte Carlo search for optimal neoantigens. This approach iteratively introduces point mutations to a peptide sequence, evaluated by a discriminator for cumulative reward.
+***Process***
 Initial step begins with a random initialization of the peptide sequence. Peptide can be mutated by: replacing an arbitrary amino acid, appending a random amino acid at the end of the sequence and deleting an amino acid at an arbitrary position.
-Cumulative Reward is calculated as the product of scores from the three predictive stages of the pipeline. 
-This Monte Carlo approach, together with the Reinforcement Learning technique, forms part of our comprehensive predictive pipeline. 
-These methods are applied in two regimes: screening lists of peptides from patients' genomic data and analyzing generated peptides. 
-This dual approach ensures a robust and diverse selection of neoantigen candidates for further investigation.
-
-### Needleman-Wunsch-Based Sequence Similarities ###
-
-To characterize the diversity of amino acid sequences among antigens, MHC-I molecules, and TCRs, the pipeline utilizes the Needleman-Wunsch algorithm. 
-This dynamic programming approach optimizes sequence alignments, providing a quantitative measure of sequence similarity that aids in the selection of diverse and potentially immunogenic neoantigens.
-
-For a more comprehensive exploration of our methodology and findings, please refer to our paper
+Cumulative Reward is calculated as the product of scores from the three predictive stages of the pipeline. This Monte Carlo approach, together with the Reinforcement Learning technique, forms part of our comprehensive predictive pipeline. These methods are applied in two regimes: screening lists of peptides from patients' genomic data and analyzing generated peptides. This dual approach ensures a robust and diverse selection of neoantigen candidates for further investigation.
    
 ## Dependencies
 * python 3.8.10
